@@ -11,6 +11,7 @@ uvicorn = "^0.17.5"
 pydantic = "^1.9.0"
 SQLAlchemy = "^1.4.31"
 asyncpg = "^0.25.0"
+databases = "^0.5.5"
 
 
 [tool.poetry.dev-dependencies]
