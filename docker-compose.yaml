@@ -1,0 +1,20 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:14.2
+    environment:
+      POSTGRES_PASSWORD: "1"
+      POSTGRES_DB: "pereval"
+      POSTGRES_USER: "range"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - .:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  app:
+    build: .
+    container_name: "fstr_api"
+    ports:
+      - "8888:8888"

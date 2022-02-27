@@ -4,21 +4,11 @@ import json
 from fastapi import FastAPI, status
 from fastapi.responses import JSONResponse
 
-from fstr_api.db import database, pereval_added_table, engine
+from fstr_api.db import pereval_added_table, engine
 from fstr_api.models import PerevalAddedIn
 from fstr_api.utils import json_serial
 
 app = FastAPI()
-
-
-@app.on_event("startup")
-async def connect():
-    await database.connect()
-
-
-@app.on_event("shutdown")
-async def disconnect():
-    await database.disconnect()
 
 
 @app.post("/submitData")

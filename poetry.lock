@@ -81,24 +81,6 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
-name = "databases"
-version = "0.5.5"
-description = "Async database support for Python."
-category = "main"
-optional = false
-python-versions = ">=3.6"
-
-[package.dependencies]
-sqlalchemy = ">=1.4,<1.5"
-
-[package.extras]
-mysql = ["aiomysql"]
-mysql_asyncmy = ["asyncmy"]
-postgresql = ["asyncpg"]
-postgresql_aiopg = ["aiopg"]
-sqlite = ["aiosqlite"]
-
-[[package]]
 name = "dnspython"
 version = "2.2.0"
 description = "DNS toolkit"
@@ -355,7 +337,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "c5d97679d17e183bf55f5a5cb88588bc79f2a1adcecde9c8a60c1f1f6138f1fe"
+content-hash = "f91d00f7bf3ea5ca149b7c4df879ad6047fe06fc59c988d2413a5bb267f7a94f"
 
 [metadata.files]
 anyio = [
@@ -409,10 +391,6 @@ click = [
 colorama = [
     {file = "colorama-0.4.4-py2.py3-none-any.whl", hash = "sha256:9f47eda37229f68eee03b24b9748937c7dc3868f906e8ba69fbcbdd3bc5dc3e2"},
     {file = "colorama-0.4.4.tar.gz", hash = "sha256:5941b2b48a20143d2267e95b1c2a7603ce057ee39fd88e7329b0c292aa16869b"},
-]
-databases = [
-    {file = "databases-0.5.5-py3-none-any.whl", hash = "sha256:97d9b9647216d1ab53ca61c059412b5c7b6e1f0bf8ce985477982ebcc7f278f3"},
-    {file = "databases-0.5.5.tar.gz", hash = "sha256:02c6b016c1c951c21cca281dc8e2e002c60dc44026c0084aabbd8c37514aeb37"},
 ]
 dnspython = [
     {file = "dnspython-2.2.0-py3-none-any.whl", hash = "sha256:081649da27ced5e75709a1ee542136eaba9842a0fe4c03da4fb0a3d3ed1f3c44"},
