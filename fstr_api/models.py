@@ -1,4 +1,5 @@
 from datetime import datetime
+from enum import Enum
 import re
 from typing import Optional
 
@@ -6,8 +7,12 @@ from typing import Optional
 from pydantic import BaseModel, EmailStr, validator, constr
 
 
-class Images(BaseModel):
-    url: str
+class ImageLinks(BaseModel):
+    sedlo: Optional[list[int]]
+    Nord: Optional[list[int]]
+    West: Optional[list[int]]
+    South: Optional[list[int]]
+    East: Optional[list[int]]
 
 
 class User(BaseModel):
@@ -58,7 +63,6 @@ class GeoData(BaseModel):
     other_titles: Optional[str]
     connect: Optional[str]
 
-    add_time: datetime
     user: User
 
     coords: Coords
@@ -67,8 +71,22 @@ class GeoData(BaseModel):
     level: Level
 
 
-class PerevalAddedIn(BaseModel):
+class PerevalImages(BaseModel):
+    date_added: datetime
+    img: bytes
+
+
+class StatusEnum(str, Enum):
+    new = "new"
+    pending = "pending"
+    resolved = "resolved"
+    accepted = "accepted"
+    rejected = "rejected"
+
+
+class RawData(BaseModel):
     date_added: datetime
     raw_data: GeoData
-    images: list[Images]
-    status: constr(max_length=20) = "new"
+    images: ImageLinks
+    status: StatusEnum = StatusEnum.new
+    byte_images: list[PerevalImages]
