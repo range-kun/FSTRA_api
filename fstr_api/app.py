@@ -91,34 +91,34 @@ async def get_sumbited_data(
                     f" email, name, phone, lastname"
         )
 
-    query = sa.select(pereval_added_table)
+    pereval_query = sa.select(pereval_added_table)
     for name, value in query_params.items():
         if value is None:
             continue
-        query = query.filter(sa.text(f"raw_data::text like '%{value}%'"))
-    query = query.where(pereval_added_table.c["status"] == "new")
+        pereval_query = pereval_query.filter(sa.text(f"raw_data::text like '%{value}%'"))
+    pereval_query = pereval_query.where(pereval_added_table.c["status"] == "new")
     async with engine.begin() as conn:
-        rows = await conn.execute(query)
+        pereval_rows = await conn.execute(pereval_query)
 
-    pereval_data = rows.fetchall()
+    pereval_data = pereval_rows.fetchall()
     if not pereval_data:
         return JSONResponse(
             status_code=status.HTTP_200_OK,
             content=f"Entry with specify parameters wasn't found"
         )
+    pererval_dict_data = {row["id"]: row for row in pereval_data}
 
-    pererval_ids = {row["id"]: row for row in pereval_data}
-    query = sa.select(pereval_images_table)
-    for id_ in pererval_ids:
-        query = query.where(pereval_images_table.c["pereval_added_id"] == id_)
+    image_conditions = [pereval_images_table.c["pereval_added_id"] == id_ for id_ in pererval_dict_data]
+    image_query = sa.select(pereval_images_table).filter(sa.or_(*image_conditions))
     async with engine.begin() as conn:
-        byte_images = await conn.execute(query)
-
-    byte_ids = {byte_image["pereval_added_id"]: byte_image for byte_image in byte_images}
+        rows = await conn.execute(image_query)
+    byte_images = rows.fetchall()
 
     output = []
-    for pererval_id in pererval_ids:
-        pydantic_dict = create_pydantic_raw_data(pererval_ids[pererval_id], byte_ids.get(pererval_id, ()))
+    for pererval_id in pererval_dict_data:
+        byte_images_id = [byte_image for byte_image in byte_images
+                          if byte_image["pereval_added_id"] == pererval_id]
+        pydantic_dict = create_pydantic_raw_data(pererval_dict_data[pererval_id], byte_images_id)
         output.append(pydantic_dict)
     return {"sent_data": output}
 
