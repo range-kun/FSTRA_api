@@ -1,4 +1,5 @@
 import json
+from typing import Optional
 
 from fastapi import FastAPI, status
 from fastapi.responses import JSONResponse
@@ -6,8 +7,8 @@ import sqlalchemy as sa
 
 
 from fstr_api.db import async_session, engine, pereval_added_table, pereval_images_table
-from fstr_api.models import RawData, RawDataOut
-from fstr_api.utils import json_serial, create_output_dict
+from fstr_api.models import RawData, RawDataOut, UserSubmittedData
+from fstr_api.utils import json_serial, create_pydantic_raw_data
 
 app = FastAPI()
 
@@ -73,6 +74,55 @@ async def get_pereval_status(pereval_id: int):
         )
 
 
+@app.get("/submitData/", response_model=UserSubmittedData)
+async def get_sumbited_data(
+        email: Optional[str] = None,
+        phone: Optional[str] = None,
+        name: Optional[str] = None,
+        fam: Optional[str] = None,
+        otc: Optional[str] = None,
+):
+    query_params = {"email": email, "phone": phone, "name": name, "fam": fam, "otc": otc}
+
+    if not any(query_params.values()):
+        return JSONResponse(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            content=f"Please specify one of the following query to proceed search process:"
+                    f" email, name, phone, lastname"
+        )
+
+    query = sa.select(pereval_added_table)
+    for name, value in query_params.items():
+        if value is None:
+            continue
+        query = query.filter(sa.text(f"raw_data::text like '%{value}%'"))
+    query = query.where(pereval_added_table.c["status"] == "new")
+    async with engine.begin() as conn:
+        rows = await conn.execute(query)
+
+    pereval_data = rows.fetchall()
+    if not pereval_data:
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content=f"Entry with specify parameters wasn't found"
+        )
+
+    pererval_ids = {row["id"]: row for row in pereval_data}
+    query = sa.select(pereval_images_table)
+    for id_ in pererval_ids:
+        query = query.where(pereval_images_table.c["pereval_added_id"] == id_)
+    async with engine.begin() as conn:
+        byte_images = await conn.execute(query)
+
+    byte_ids = {byte_image["pereval_added_id"]: byte_image for byte_image in byte_images}
+
+    output = []
+    for pererval_id in pererval_ids:
+        pydantic_dict = create_pydantic_raw_data(pererval_ids[pererval_id], byte_ids.get(pererval_id, ()))
+        output.append(pydantic_dict)
+    return {"sent_data": output}
+
+
 @app.get("/submitData/{pereval_id}", response_model=RawDataOut)
 async def get_pereval_info(pereval_id: int):
     query_date_added = sa.select(pereval_added_table).where(
@@ -94,11 +144,4 @@ async def get_pereval_info(pereval_id: int):
             content=f"An entry with the specified id {pereval_id} was not found"
         )
 
-    output = create_output_dict(pereval_added_table, pereval_data)
-    byte_images = []
-    for image_data in images_data:
-        byte_image = create_output_dict(pereval_images_table, image_data)
-        byte_images.append(byte_image)
-
-    output["byte_images"] = byte_images
-    return output
+    return create_pydantic_raw_data(pereval_data, images_data)

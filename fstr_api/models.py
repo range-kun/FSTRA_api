@@ -116,3 +116,6 @@ class RawDataOut(BaseModel):
             datetime: lambda v: v.strftime("%Y-%m-%d %H:%M:%S"),
         }
 
+
+class UserSubmittedData(BaseModel):
+    sent_data: list[RawDataOut]

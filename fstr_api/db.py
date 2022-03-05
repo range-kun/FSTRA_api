@@ -4,8 +4,9 @@ from functools import partial
 import sqlalchemy as sa
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.asyncio import create_async_engine
-from sqlalchemy.dialects.postgresql import BYTEA
+from sqlalchemy.dialects.postgresql import BYTEA, JSON
 from sqlalchemy.orm import sessionmaker
+
 
 from config import DATABASE_URL
 
@@ -17,8 +18,8 @@ pereval_added_table: sa.Table = sa.Table(
     metadata,
     sa.Column("id", sa.Integer, primary_key=True),
     sa.Column("date_added", sa.DateTime),
-    sa.Column("raw_data", sa.JSON),
-    sa.Column("images", sa.JSON),
+    sa.Column("raw_data", JSON),
+    sa.Column("images", JSON),
     sa.Column("status", sa.VARCHAR(length=20))
 )
 
