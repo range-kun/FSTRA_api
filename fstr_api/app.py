@@ -108,7 +108,8 @@ async def get_sumbited_data(
         )
     pererval_dict_data = {row["id"]: row for row in pereval_data}
 
-    image_conditions = [pereval_images_table.c["pereval_added_id"] == id_ for id_ in pererval_dict_data]
+    image_conditions = \
+        [pereval_images_table.c["pereval_added_id"] == id_ for id_ in pererval_dict_data]
     image_query = sa.select(pereval_images_table).filter(sa.or_(*image_conditions))
     async with engine.begin() as conn:
         rows = await conn.execute(image_query)
@@ -118,7 +119,10 @@ async def get_sumbited_data(
     for pererval_id in pererval_dict_data:
         byte_images_id = [byte_image for byte_image in byte_images
                           if byte_image["pereval_added_id"] == pererval_id]
-        pydantic_dict = create_pydantic_raw_data(pererval_dict_data[pererval_id], byte_images_id)
+        pydantic_dict = create_pydantic_raw_data(
+            pererval_dict_data[pererval_id],
+            byte_images_id
+        )
         output.append(pydantic_dict)
     return {"sent_data": output}
 

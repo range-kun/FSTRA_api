@@ -26,7 +26,7 @@ def create_output_dict(table: sa.Table, data: saRow) -> dict:
     return output
 
 
-def create_pydantic_raw_data(pereval_data, images_data):
+def create_pydantic_raw_data(pereval_data, images_data) -> dict:
     output = create_output_dict(pereval_added_table, pereval_data)
     byte_images = []
     for image_data in images_data:
