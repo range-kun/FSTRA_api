@@ -1,4 +1,3 @@
-from datetime import datetime
 import json
 from functools import partial
 
@@ -28,7 +27,11 @@ pereval_images_table: sa.Table = sa.Table(
     metadata,
     sa.Column("id", sa.Integer, primary_key=True),
     sa.Column("date_added", sa.DateTime),
-    sa.Column("img", BYTEA)
+    sa.Column("img", BYTEA),
+    sa.Column('pereval_added_id',
+              sa.Integer,
+              sa.ForeignKey("pereval_added.id", onupdate="CASCADE", ondelete="CASCADE"), nullable=False
+              ),
 )
 
 async_session = sessionmaker(

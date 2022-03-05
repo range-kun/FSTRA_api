@@ -4,7 +4,7 @@ import re
 from typing import Optional
 
 
-from pydantic import BaseModel, EmailStr, validator, constr
+from pydantic import BaseModel, EmailStr, validator
 
 
 class ImageLinks(BaseModel):
@@ -71,6 +71,19 @@ class GeoData(BaseModel):
     level: Level
 
 
+class GeoDataOut(BaseModel):
+    pereval_id: int
+    beautyTitle: str
+    title: str
+    other_titles: Optional[str]
+    connect: Optional[str]
+
+    coords: Coords
+    type: str = "pass"
+
+    level: Level
+
+
 class PerevalImages(BaseModel):
     date_added: datetime
     img: bytes
@@ -90,3 +103,16 @@ class RawData(BaseModel):
     images: ImageLinks
     status: StatusEnum = StatusEnum.new
     byte_images: list[PerevalImages]
+
+
+class RawDataOut(BaseModel):
+    date_added: datetime
+    raw_data: GeoDataOut
+    status: StatusEnum = StatusEnum.new
+    byte_images: list[PerevalImages]
+
+    class Config:
+        json_encoders = {
+            datetime: lambda v: v.strftime("%Y-%m-%d %H:%M:%S"),
+        }
+

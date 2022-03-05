@@ -36,7 +36,9 @@ CREATE TABLE pereval_images (
     "id" int4 NOT NULL DEFAULT nextval('pereval_added_id_seq'::regclass),
     "date_added" timestamp DEFAULT now(),
     "img" bytea NOT NULL,
-    PRIMARY KEY ("id")
+    "pereval_added_id" INT4,
+    PRIMARY KEY ("id"),
+    CONSTRAINT fk__pereval_images__pereval_added FOREIGN KEY (pereval_added_id) REFERENCES pereval_added (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- This script only contains the table creation statements and does not fully represent the table in the database. It's still missing: indices, triggers. Do not use it as a backup.
