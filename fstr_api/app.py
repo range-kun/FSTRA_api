@@ -203,7 +203,6 @@ async def update_submitted_data(
             result = await session.execute(query_pereval_added)
             if not main_id:
                 main_id = result.inserted_primary_key[0]
-            await session.execute(query_pereval_added)
             for byte_image in pereval_new_images:
                 image_query = pereval_images_table.insert().values(
                     date_added=byte_image["date_added"],
