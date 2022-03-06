@@ -109,12 +109,20 @@ class RawDataOut(BaseModel):
     date_added: datetime
     raw_data: GeoDataOut
     status: StatusEnum = StatusEnum.new
+    images: ImageLinks
     byte_images: list[PerevalImages]
 
     class Config:
         json_encoders = {
             datetime: lambda v: v.strftime("%Y-%m-%d %H:%M:%S"),
         }
+
+
+class RawDataUpdate(BaseModel):
+    date_added: datetime
+    raw_data: GeoDataOut
+    images: Optional[ImageLinks]
+    byte_images: Optional[list[PerevalImages]]
 
 
 class UserSubmittedData(BaseModel):

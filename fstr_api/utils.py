@@ -19,7 +19,7 @@ def create_output_dict(table: sa.Table, data: saRow) -> dict:
     output = {}
     for column_name in table.columns.keys():
         value = getattr(data, column_name)
-        if column_name == "raw_data":
+        if column_name == "raw_data" or column_name == "images":
             value = json.loads(value)
         output[column_name] = value
 
